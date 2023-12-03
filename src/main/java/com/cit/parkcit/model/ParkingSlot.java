@@ -1,8 +1,11 @@
 package com.cit.parkcit.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "parking_slot")
 public class ParkingSlot {
 
     @Id
@@ -10,10 +13,13 @@ public class ParkingSlot {
     private int parkingSlotID;
 
     @ManyToOne
-    @JoinColumn(name = "parkingLotID", nullable = false)
+    @JoinColumn(name = "parking_lotid", nullable = false)
     private ParkingLot parkingLot;
 
+    @JsonProperty("isEmployee")
     private boolean isEmployee;
+    
+    @JsonProperty("isAvailable")
     private boolean isAvailable;
 
     // Constructors, getters, and setters

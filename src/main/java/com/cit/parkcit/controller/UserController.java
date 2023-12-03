@@ -1,9 +1,11 @@
 package com.cit.parkcit.controller;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.security.SecureRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import com.cit.parkcit.model.UserType;
 import com.cit.parkcit.repository.UserRepository;
 import com.cit.parkcit.repository.VehicleRepository;
 import com.cit.parkcit.repository.UserTypeRepository;
+import com.cit.parkcit.lib.Common;
 
 @RestController
 @RequestMapping("/users")
@@ -47,6 +50,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
+        user.setStickerGeneratedID(Common.getRandomId(10));
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
@@ -70,7 +74,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{userId}/vehicles")
+    @GetMapping("/{userId}/vehicle")
 	public ResponseEntity<Set<Vehicle>> getVehiclesByUserId(@PathVariable Integer userId) {
 		Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -78,29 +82,27 @@ public class UserController {
 						.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PostMapping("/{userId}/add-vehicles")
-	public ResponseEntity<User> addVehiclesToUser(@PathVariable Integer userId, @RequestBody Set<Vehicle> vehicles) {
-		Optional<User> optionalUser = userRepository.findById(userId);
+	@PostMapping("/{userId}/add-vehicle")
+    public ResponseEntity<User> addVehicleToUser(@PathVariable Integer userId, @RequestBody Vehicle vehicle) {
+        Optional<User> optionalUser = userRepository.findById(userId);
 
-		if (optionalUser.isPresent()) {
-			User user = optionalUser.get();
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
 
-			// Save each vehicle before associating
-			for (Vehicle vehicle : vehicles) {
-				vehicleRepository.save(vehicle);
-			}
+            // Save the vehicle before associating
+            Vehicle savedVehicle = vehicleRepository.save(vehicle);
 
-			// Now associate the saved vehicles with the user
-			user.getVehicles().addAll(vehicles);
+            // Now associate the saved vehicle with the user
+            user.getVehicles().add(savedVehicle);
 
-			// Update the user in the database
-			User updatedUser = userRepository.save(user);
+            // Update the user in the database
+            User updatedUser = userRepository.save(user);
 
-			return ResponseEntity.ok(updatedUser);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PutMapping("/{userId}/set-user-type/{userTypeId}")
     public ResponseEntity<User> setUserTypeForUser(@PathVariable Integer userId, @PathVariable Integer userTypeId) {

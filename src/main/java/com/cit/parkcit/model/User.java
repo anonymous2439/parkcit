@@ -22,6 +22,7 @@ public class User {
     private String userLName;
     private boolean hasMiddleName;
     private String userMName;
+    private String stickerGeneratedID;
 
     @ManyToMany
     @JoinTable(
@@ -40,13 +41,15 @@ public class User {
     public User() {
     }
 
-    public User(Date userBirthDate, Date userJoinedDate, String userFName, String userLName, boolean hasMiddleName, String userMName) {
+    public User(UserType userType, Date userBirthDate, Date userJoinedDate, String userFName, String userLName, boolean hasMiddleName, String userMName, String stickerGeneratedID) {
         this.userBirthDate = userBirthDate;
         this.userJoinedDate = userJoinedDate;
         this.userFName = userFName;
         this.userLName = userLName;
         this.hasMiddleName = hasMiddleName;
         this.userMName = userMName;
+        this.userType = userType;
+        this.stickerGeneratedID = stickerGeneratedID;
     }
 
     // Getters and setters...
@@ -118,4 +121,26 @@ public class User {
     public void setUserType(UserType userType) {
         this.userType = userType;
     }
+
+    /**
+     * @return String return the stickerGeneratedID
+     */
+    public String getStickerGeneratedID() {
+        return stickerGeneratedID;
+    }
+
+    /**
+     * @param stickerGeneratedID the stickerGeneratedID to set
+     */
+    public void setStickerGeneratedID(String stickerGeneratedID) {
+        this.stickerGeneratedID = stickerGeneratedID;
+    }
+
+    /**
+     * @param vehicles the vehicles to set
+     */
+    public void setVehicles(Set<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
+
 }

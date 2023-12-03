@@ -3,6 +3,8 @@ package com.cit.parkcit.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "user_types")
 public class UserType {
@@ -16,7 +18,10 @@ public class UserType {
     private String userType;
 
     @OneToMany(mappedBy = "userType", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<User> users;
+
+    public UserType(){}
 
     // Constructors, getters, setters, and other methods...
 

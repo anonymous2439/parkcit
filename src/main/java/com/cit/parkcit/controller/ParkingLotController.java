@@ -1,7 +1,10 @@
 package com.cit.parkcit.controller;
 
 import com.cit.parkcit.model.ParkingLot;
+import com.cit.parkcit.model.ParkingSlot;
 import com.cit.parkcit.repository.ParkingLotRepository;
+import com.cit.parkcit.service.ParkingLotService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,9 @@ public class ParkingLotController {
 
     @Autowired
     private ParkingLotRepository parkingLotRepository;
+
+    @Autowired
+    private ParkingLotService parkingLotService;
 
     // Get all parking lots
     @GetMapping
@@ -64,5 +70,18 @@ public class ParkingLotController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/available-slots/{id}")
+    public ResponseEntity<List<ParkingSlot>> availableParkingSlots(@PathVariable("id") int parkingLotID) {
+        List<ParkingSlot> availableSlots = parkingLotService.getAvailableParkingSlots(parkingLotID);
+
+        if (availableSlots.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(availableSlots);
+        }
+    }
+
+
 
 }
