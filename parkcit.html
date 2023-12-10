@@ -35,6 +35,8 @@
                         <select v-model="user_form.userType">
                             <option v-for="(user_type, i) in user_types.data" :key="i" :value="user_type">{{user_type.userType}}</option>
                         </select>
+                        <input placeholder="Username" v-model="user_form.username" />
+                        <input placeholder="Password" v-model="user_form.password" />
                         <input placeholder="First name" v-model="user_form.userFName" />
                         <input placeholder="Last name" v-model="user_form.userLName" />
                         <input v-model="user_form.hasMiddleName" hidden />
@@ -207,7 +209,13 @@
                         .catch(error => console.error('Error fetching data:', error));
                     },
                     fetchVehicles () {
-                        fetch(this.host+'/vehicles')
+                        fetch(this.host+'/vehicles', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Basic ' + btoa('user:9b1fe007-cc86-489c-bc7f-79050dbb5ff8'),
+                                'Content-Type': 'application/json',
+                            },
+                        })
                         .then(response => response.json())
                             .then(data => {
                                 this.vehicles.data = data;

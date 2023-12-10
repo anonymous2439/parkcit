@@ -18,6 +18,8 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Date userJoinedDate;
 
+    private String username;
+    private String password;
     private String userFName;
     private String userLName;
     private boolean hasMiddleName;
@@ -41,7 +43,7 @@ public class User {
     public User() {
     }
 
-    public User(UserType userType, Date userBirthDate, Date userJoinedDate, String userFName, String userLName, boolean hasMiddleName, String userMName, String stickerGeneratedID) {
+    public User(UserType userType, Date userBirthDate, Date userJoinedDate, String userFName, String userLName, boolean hasMiddleName, String userMName, String stickerGeneratedID, String username, String password) {
         this.userBirthDate = userBirthDate;
         this.userJoinedDate = userJoinedDate;
         this.userFName = userFName;
@@ -50,9 +52,27 @@ public class User {
         this.userMName = userMName;
         this.userType = userType;
         this.stickerGeneratedID = stickerGeneratedID;
-    }
+        this.username = username;
+        this.password = password;
+    }    
 
     // Getters and setters...
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public Set<Vehicle> getVehicles() {
         return vehicles;

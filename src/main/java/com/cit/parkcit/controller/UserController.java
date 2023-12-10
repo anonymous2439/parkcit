@@ -1,14 +1,13 @@
 package com.cit.parkcit.controller;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.security.SecureRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.cit.parkcit.model.User;
@@ -26,6 +25,8 @@ public class UserController {
     private final UserRepository userRepository;
     private final UserTypeRepository userTypeRepository;
 	private final VehicleRepository vehicleRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(UserRepository userRepository, VehicleRepository vehicleRepository, UserTypeRepository userTypeRepository) {
@@ -48,9 +49,12 @@ public class UserController {
         return optionalUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Register user
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         user.setStickerGeneratedID(Common.getRandomId(10));
+        // encode password before saving it to the database
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
