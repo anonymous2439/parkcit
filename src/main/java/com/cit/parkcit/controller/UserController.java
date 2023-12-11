@@ -108,6 +108,47 @@ public class UserController {
         }
     }
 
+    // update vehicle for a specific user
+    @PutMapping("/{userId}/update-vehicle/{vehicleId}")
+    public ResponseEntity<User> updateVehicleDetails(
+        @PathVariable Integer userId,
+        @PathVariable Integer vehicleId,
+        @RequestBody Vehicle updatedVehicle) {
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            // Check if the user has the specified vehicle
+            Optional<Vehicle> optionalVehicle = user.getVehicles().stream()
+                .filter(vehicle -> vehicle.getVehicleID().equals(vehicleId))
+                .findFirst();
+
+            if (optionalVehicle.isPresent()) {
+                // Update the vehicle details
+                Vehicle existingVehicle = optionalVehicle.get();
+                existingVehicle.setVehicleType(updatedVehicle.getVehicleType());
+                existingVehicle.setVehiclePlateNo(updatedVehicle.getVehiclePlateNo());
+                existingVehicle.setVehicleName(updatedVehicle.getVehicleName());
+                existingVehicle.setVehicleColor(updatedVehicle.getVehicleColor());
+
+                // Save the updated vehicle
+                Vehicle savedVehicle = vehicleRepository.save(existingVehicle);
+
+                // Update the user in the database
+                User updatedUser = userRepository.save(user);
+
+                return ResponseEntity.ok(updatedUser);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     @PutMapping("/{userId}/set-user-type/{userTypeId}")
     public ResponseEntity<User> setUserTypeForUser(@PathVariable Integer userId, @PathVariable Integer userTypeId) {
         Optional<User> optionalUser = userRepository.findById(userId);

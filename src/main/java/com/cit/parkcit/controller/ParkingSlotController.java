@@ -1,9 +1,13 @@
 package com.cit.parkcit.controller;
 
 import com.cit.parkcit.model.ParkingSlot;
+import com.cit.parkcit.model.User;
 import com.cit.parkcit.repository.ParkingLotRepository;
 import com.cit.parkcit.repository.ParkingSlotRepository;
+import com.cit.parkcit.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,9 @@ public class ParkingSlotController {
 
     @Autowired
     private ParkingLotRepository parkingLotRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Get all parking slots
     @GetMapping
@@ -58,6 +65,37 @@ public class ParkingSlotController {
 
             ParkingSlot savedParkingSlot = parkingSlotRepository.save(existingParkingSlot);
             return ResponseEntity.ok(savedParkingSlot);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // Toggle parking slot availability
+    @PutMapping("/{slot_id}/user/{user_id}")
+    public ResponseEntity<ParkingSlot> toggleParkingSlotAvailability(
+            @PathVariable("slot_id") int slot_id,
+            @PathVariable("user_id") int user_id) {
+
+        Optional<User> optionalUser = userRepository.findById(user_id);
+        Optional<ParkingSlot> optionalParkingSlot = parkingSlotRepository.findById(slot_id);
+
+        if (optionalParkingSlot.isPresent() && optionalUser.isPresent()) {
+            ParkingSlot existingParkingSlot = optionalParkingSlot.get();
+            User existingUser = optionalUser.get();
+
+            /* 
+                can only toggle the slot if the slot is reserved for employee and the current user is an employee
+                or if the slot is not reserved for employee for all types of user types
+            */
+            if (("employee".equals(existingUser.getUserType().getUserType()) && existingParkingSlot.isEmployee())
+                    || !existingParkingSlot.isEmployee()) {
+                existingParkingSlot.setAvailable(!existingParkingSlot.isAvailable());
+                ParkingSlot savedParkingSlot = parkingSlotRepository.save(existingParkingSlot);
+                return ResponseEntity.ok(savedParkingSlot);
+            } 
+            else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
         } else {
             return ResponseEntity.notFound().build();
         }
